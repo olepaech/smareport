@@ -16,8 +16,8 @@
 #' @examples
 #' \dontrun{
 #' path <- nbssma::load_participant_files()
-#' df <- readxl::read_excel(path)
-#' static_aggregated_risk_factors(df)
+#' data <- readxl::read_excel(path)
+#' static_aggregated_risk_factors(data)
 #' }
 #' @author Ole Paech
 #' @export
@@ -31,11 +31,11 @@ static_aggregated_risk_factors <- function(
     title = ""
 ) {
   suppressWarnings({
-    
+
     inflation_col <- names(df)[infl_col]
     risks_1 <- gsub("2", "", names(df)[upside_col])
     risks_2 <- gsub("2", "", names(df)[downside_col])
-    
+
     mapping <- c(
       "Absolutely no relevance" = 0,
       "Not so Important" = 0.5,
@@ -43,10 +43,10 @@ static_aggregated_risk_factors <- function(
       "Important" = 1.5,
       "Very Important" = 2.0
     )
-    
+
     df_clean <- df |>
       dplyr::mutate(
-        inflation_raw = .[[inflation_col]],
+        inflation_raw = .data[[inflation_col]],
         inflation_clean_char = gsub(",", ".", gsub("%", "", inflation_raw)),
         inflation_value = suppressWarnings(as.numeric(trimws(inflation_clean_char)))
       ) |>
@@ -55,7 +55,7 @@ static_aggregated_risk_factors <- function(
         .fns = ~ mapping[trimws(as.character(.))],
         .names = "num_{.col}"
       ))
-    
+
     risk1_mean <- mean(unlist(df_clean |>
                                 dplyr::select(dplyr::all_of(paste0("num_", risks_1)))),
                        na.rm = TRUE)
@@ -63,25 +63,25 @@ static_aggregated_risk_factors <- function(
                                 dplyr::select(dplyr::all_of(paste0("num_", risks_2)))),
                        na.rm = TRUE)
     inflation_value <- mean(df_clean$inflation_value, na.rm = TRUE)
-    
+
     df_plot <- data.frame(
       Group = factor(c("Upside Risks", "Downside Risks"),
                      levels = c("Upside Risks", "Downside Risks")),
       Value = c(risk1_mean, risk2_mean),
       inflation_value = inflation_value
     )
-    
+
     farben <- c("Upside Risks" = "#1c355e", "Downside Risks" = "#0067ab")
     max_abs_risk <- max(abs(df_plot$Value))
-    
+
     sec_breaks <- pretty(c(-max_abs_risk, max_abs_risk))
     sec_breaks_scaled <- sec_breaks / max_abs_risk
     sec_breaks_scaled <- sec_breaks_scaled[sec_breaks_scaled >= -1 & sec_breaks_scaled <= 1]
     gridlines_y <- inflation_value + sec_breaks_scaled * max_abs_risk
-    
+
     p <- ggplot2::ggplot() +
       ggplot2::geom_hline(yintercept = gridlines_y, color = "gray80", size = 0.3) +
-      
+
       ggplot2::geom_rect(data = df_plot[1, ],
                          ggplot2::aes(xmin = 0.7, xmax = 1.3,
                                       ymin = inflation_value,
@@ -117,7 +117,7 @@ static_aggregated_risk_factors <- function(
         legend.position = "right",
         legend.title = ggplot2::element_blank()
       )
-    
+
     return(p)
   })
 }

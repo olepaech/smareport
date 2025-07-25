@@ -12,13 +12,13 @@
 #' @param title Title of the plot.
 #'
 #' @return A ggplot object showing the share of aggregated upside and downside risk over time.
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' file_list <- nbssma::prepare_file_list(c=("May 25", "Jun 25", "Jul 25"))
-#' aggregate_risk_development(file_list)
+#' static_aggregate_risk_development(file_list)
 #' }
-#' 
+#'
 #' @author Ole Paech
 #' @export
 static_aggregate_risk_development <- function(file_paths_named_list,
@@ -29,7 +29,7 @@ static_aggregate_risk_development <- function(file_paths_named_list,
                                        ylab = "Share of Total Risk",
                                        title = "Share of Aggregated Upside vs Downside Risk Over Time") {
   suppressWarnings({
-    
+
     importance_map <- c(
       "Absolutely no relevance" = 0,
       "Not so Important" = 1,
@@ -37,14 +37,14 @@ static_aggregate_risk_development <- function(file_paths_named_list,
       "Important" = 3,
       "Very Important" = 4
     )
-    
+
     process_file <- function(path, label) {
       df <- readxl::read_excel(path)
-      
+
       col_names <- c("Inflation",
                      paste0("Upside_", seq_along(upside_col)),
                      paste0("Downside_", seq_along(downside_col)))
-      
+
       df <- df |>
         dplyr::mutate(
           Inflation = df[[infl_col]] |>
@@ -60,13 +60,13 @@ static_aggregate_risk_development <- function(file_paths_named_list,
         dplyr::mutate(dplyr::across(dplyr::starts_with("Upside_"), ~ importance_map[.])) |>
         dplyr::mutate(dplyr::across(dplyr::starts_with("Downside_"), ~ importance_map[.])) |>
         dplyr::mutate(Source = label)
-      
+
       return(df)
     }
-    
+
     all_data <- purrr::map2_dfr(file_paths_named_list, names(file_paths_named_list), process_file) |>
       dplyr::mutate(Source = factor(Source, levels = names(file_paths_named_list)))
-    
+
     agg_data <- all_data |>
       dplyr::group_by(Source) |>
       dplyr::summarise(
@@ -91,9 +91,9 @@ static_aggregate_risk_development <- function(file_paths_named_list,
           Risk_Type == "Downside_Share" ~ "Downside Risk"
         )
       )
-    
+
     colors <- c("Upside Risk" = "#1c355e", "Downside Risk" = "#0067ab")
-    
+
     plot <- ggplot2::ggplot(agg_data, ggplot2::aes(x = Source, y = Share, fill = Risk_Type)) +
       ggplot2::geom_col(position = ggplot2::position_stack(reverse = TRUE), width = 0.7, color = NA) +
       ggplot2::scale_y_continuous(labels = scales::percent_format()) +
@@ -109,7 +109,7 @@ static_aggregate_risk_development <- function(file_paths_named_list,
         text = ggplot2::element_text(size = 14),
         plot.title = ggplot2::element_text(face = "bold", hjust = 0.5)
       )
-    
+
     return(plot)
   })
 }

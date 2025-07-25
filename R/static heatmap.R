@@ -15,7 +15,7 @@
 #' \dontrun{
 #' path <- nbssma::load_participant_files()
 #' data <- readxl::read_excel(path)
-#' static_heatmap_categories(data, category1 = "Profession", category2 = "Experience")
+#' static_heatmap_categories(data, category1 = "Experience", category2 = "Profession")
 #' }
 #'
 #' @author Ole Paech
@@ -27,21 +27,21 @@ static_heatmap_categories <- function(
     rel_cols = c(10, 12, 14),
     title = ""
 ) {
-  
+
   category_map <- list(
     "Profession" = "What is your profession?",
     "Experience" = "How many years of expertise do you have?",
     "Nationality" = "What is your nationality?"
   )
-  
+
   if (!(category1 %in% names(category_map) && category2 %in% names(category_map))) {
     stop("Invalid Category. Please choose between 'Profession', 'Experience' or 'Nationality'.")
   }
-  
+
   category_col1 <- category_map[[category1]]
   category_col2 <- category_map[[category2]]
   relevant_cols <- names(data)[rel_cols]
-  
+
   data_clean <- data |>
     dplyr::select(
       dplyr::all_of(category_col1),
@@ -54,7 +54,7 @@ static_heatmap_categories <- function(
         stringr::str_replace_all(",", ".") |>
         as.numeric()
     ))
-  
+
   data_long <- data_clean |>
     tidyr::pivot_longer(
       cols = dplyr::all_of(relevant_cols),
@@ -65,11 +65,11 @@ static_heatmap_categories <- function(
     dplyr::filter(!is.na(.data[[category_col1]]), .data[[category_col1]] != "") |>
     dplyr::filter(!is.na(.data[[category_col2]]), .data[[category_col2]] != "") |>
     dplyr::mutate(Month = extract_label(Question))
-  
+
   month_levels <- unique(data_long$Month)[
     order(match(unique(data_long$Month), extract_label(relevant_cols)))
   ]
-  
+
   data_long <- data_long |>
     dplyr::mutate(Month = factor(Month, levels = month_levels)) |>
     dplyr::group_by(.data[[category_col1]], .data[[category_col2]], Month) |>
@@ -77,24 +77,24 @@ static_heatmap_categories <- function(
       Median_Expectation = median(Value, na.rm = TRUE),
       .groups = "drop"
     )
-  
+
   levels_map <- list(
     "Experience" = c("0 - 5 years", "5 - 15 years", "over 15 years"),
     "Profession" = c("Data and Statistics", "Economics and Research", "Markets",
                      "Financial Stability and Bank Supervision", "Other"),
     "Nationality" = c("Slovak", "Non-Slovak")
   )
-  
+
   data_long[[category_col1]] <- factor(
     data_long[[category_col1]],
     levels = levels_map[[category1]]
   )
-  
+
   data_long[[category_col2]] <- factor(
     data_long[[category_col2]],
     levels = levels_map[[category2]]
   )
-  
+
   ggplot2::ggplot(data_long, ggplot2::aes(
     x = .data[[category_col1]],
     y = .data[[category_col2]],

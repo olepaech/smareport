@@ -10,7 +10,7 @@
 #' @examples
 #' path <- nbssma::load_participant_files()
 #' data <- readxl::read_excel(path)
-#' bar_line_gg(data, rel_cols = c(10,12,14), title1 = "Median (left)", title2 = "IQR (right)")
+#' static_bar_line(data, rel_cols = c(10,12,14), title1 = "Median (left)", title2 = "IQR (right)")
 #'
 #' @author Ole Paech
 #'
@@ -25,7 +25,7 @@
 static_bar_line <- function(data, rel_cols = c(10,12,14), title1 = "Median in % (left)", title2 = "IQR (right)") {
   suppressWarnings({
     relevant_cols <- names(data)[rel_cols]
-    
+
     data_clean <- data |>
       dplyr::select(dplyr::all_of(relevant_cols)) |>
       dplyr::mutate(dplyr::across(
@@ -35,12 +35,12 @@ static_bar_line <- function(data, rel_cols = c(10,12,14), title1 = "Median in % 
           stringr::str_replace_all(",", ".") |>
           as.numeric()
       ))
-    
+
     data_long <- data_clean |>
       tidyr::pivot_longer(cols = dplyr::everything(), names_to = "Question", values_to = "Value") |>
       dplyr::filter(!is.na(Value)) |>
       dplyr::mutate(Month = extract_label(Question))
-    
+
     stats <- data_long |>
       dplyr::group_by(Month) |>
       dplyr::summarise(
@@ -54,11 +54,11 @@ static_bar_line <- function(data, rel_cols = c(10,12,14), title1 = "Median in % 
       dplyr::arrange(Month_date) |>
       dplyr::mutate(Month_numeric = dplyr::row_number()) |>
       dplyr::select(-Month_date)
-    
+
     max_median <- max(stats$Median, na.rm = TRUE)
     max_iqr <- max(stats$IQR, na.rm = TRUE)
     ratio <- max_median / max_iqr
-    
+
     ggplot2::ggplot(stats, ggplot2::aes(x = Month_numeric)) +
       ggplot2::geom_col(ggplot2::aes(y = Median), fill = "#1c355e", width = 0.6) +
       ggplot2::geom_line(ggplot2::aes(y = IQR * ratio), color = "#cce1ee", size = 1.5) +

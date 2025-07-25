@@ -34,7 +34,7 @@ from survey response data.
 \dontrun{
 path <- nbssma::load_participant_file()
 data <- readxl::read_excel(path)
-static_shaded_plots(data)    
+static_shaded_plot(data)
 }
 
 }

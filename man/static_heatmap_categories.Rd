@@ -34,7 +34,7 @@ of two respondent categories (e.g., Profession and Experience) across different 
 \dontrun{
 path <- nbssma::load_participant_files()
 data <- readxl::read_excel(path)
-static_heatmap_categories(data, category1 = "Profession", category2 = "Experience")
+static_heatmap_categories(data, category1 = "Experience", category2 = "Profession")
 }
 
 }

@@ -29,7 +29,7 @@ Create a bar and line plot showing median and IQR over time (staitc version)
 \examples{
 path <- nbssma::load_participant_files()
 data <- readxl::read_excel(path)
-bar_line_gg(data, rel_cols = c(10,12,14), title1 = "Median (left)", title2 = "IQR (right)")
+static_bar_line(data, rel_cols = c(10,12,14), title1 = "Median (left)", title2 = "IQR (right)")
 
 }
 \author{

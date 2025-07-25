@@ -39,7 +39,7 @@ of the relative share of upside vs. downside risks over time.
 \examples{
 \dontrun{
 file_list <- nbssma::prepare_file_list(c=("May 25", "Jun 25", "Jul 25"))
-aggregate_risk_development(file_list)
+static_aggregate_risk_development(file_list)
 }
 
 }

@@ -40,8 +40,8 @@ are placed relative to the average inflation level.
 \examples{
 \dontrun{
 path <- nbssma::load_participant_files()
-df <- readxl::read_excel(path)
-static_aggregated_risk_factors(df)
+data <- readxl::read_excel(path)
+static_aggregated_risk_factors(data)
 }
 }
 \author{

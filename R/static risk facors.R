@@ -30,7 +30,7 @@ static_risk_factors <- function(
     downside_col = 24:29,
     xlab = "",
     ylab = "Average Inflation Expectation",
-    ylab2 = "Risk Importance (0: low  6: high)",
+    ylab2 = "Risk Importance (0: low, 6: high)",
     title = ""
 ) {
   inflation_col <- names(df)[infl_col]
@@ -40,6 +40,14 @@ static_risk_factors <- function(
   risks_1 <- gsub("2", "", risks_1)
   risks_2 <- gsub("2", "", risks_2)
 
+  risks_1 <- paste0("up_", risks_1)
+  risks_2 <- paste0("down_", risks_2)
+
+  data_renamed <- df
+  names(data_renamed)[upside_col] <- risks_1
+  names(data_renamed)[downside_col] <- risks_2
+
+
   mapping <- c(
     "Absolutely no relevance" = 0,
     "Not so Important" = 0.25,
@@ -48,7 +56,7 @@ static_risk_factors <- function(
     "Very Important" = 1.0
   )
 
-  df_clean <- df |>
+  df_clean <- data_renamed |>
     dplyr::mutate(
       inflation_raw = .data[[inflation_col]],
       inflation_clean_char = gsub(",", ".", gsub("%", "", inflation_raw)),
@@ -64,11 +72,16 @@ static_risk_factors <- function(
     dplyr::select(df_clean, dplyr::all_of(paste0("num_", risks_1))),
     na.rm = TRUE
   )
+  names(risk1_means) <- stringr::str_remove(names(risk1_means), "^num_up_")
   risk2_means <- colMeans(
     dplyr::select(df_clean, dplyr::all_of(paste0("num_", risks_2))),
     na.rm = TRUE
   )
+  names(risk2_means) <- stringr::str_remove(names(risk2_means), "^num_up_")
   inflation_value <- mean(df_clean$inflation_value, na.rm = TRUE)
+
+  risks_1 <- stringr::str_remove(risks_1, "^up_")
+  risks_2 <- stringr::str_remove(risks_2, "^down_")
 
   df_plot <- data.frame(
     Variable = c(risks_1, risks_2),

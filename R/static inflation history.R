@@ -14,15 +14,15 @@
 #' @param title A character string specifying the title of the graph (optional).
 #'
 #' @return A static ggplot2 object showing inflation expectations and risk decomposition.
-#' 
+#'
 #' @author Ole Paech
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' file_list <- nbssma::prepare_file_list(c=("May 25", "Jun 25", "Jul 25"))
 #' static_inflation_risk_history(file_list)
 #' }
-#' 
+#'
 #' @export
 static_inflation_risk_history <- function(files_with_labels, infl_col = c(16), upside_col = c(17:22), downside_col = c(24:29), xlab = "Survey Date", ylab = "Average Inflation Expectations (in %)", title = "Development of Inflation Projections and perceived Risks") {
   importance_map <- c(
@@ -32,14 +32,14 @@ static_inflation_risk_history <- function(files_with_labels, infl_col = c(16), u
     "Important" = 1.5,
     "Very Important" = 2.0
   )
-  
+
   rename_risk <- function(x) {
     x <- gsub("Upside_", "", x)
     x <- gsub("Downside_", "", x)
     x <- gsub("2", "", x)
     return(x)
   }
-  
+
   process_file <- function(path, label) {
     df <- readxl::read_excel(path)
     df <- dplyr::mutate(df,
@@ -52,17 +52,17 @@ static_inflation_risk_history <- function(files_with_labels, infl_col = c(16), u
       dplyr::select(Inflation, upside_col, downside_col) |>
       dplyr::mutate(dplyr::across(2:(length(upside_col)+length(downside_col)+1), ~ importance_map[.])) |>
       dplyr::mutate(Source = label)
-    
+
     return(df)
   }
-  
+
   all_data <- dplyr::bind_rows(
     lapply(seq_along(files_with_labels), function(i) {
       process_file(files_with_labels[[i]], names(files_with_labels)[i])
     })
   ) |>
     dplyr::mutate(Source = factor(Source, levels = names(files_with_labels)))
-  
+
   summary_data <- all_data |>
     dplyr::group_by(Source) |>
     dplyr::summarise(
@@ -70,17 +70,17 @@ static_inflation_risk_history <- function(files_with_labels, infl_col = c(16), u
       dplyr::across(2:(length(upside_col)+1), ~ mean(., na.rm = TRUE), .names = "Upside_{.col}"),
       dplyr::across((length(upside_col)+2):(length(upside_col)+length(downside_col)+1), ~ mean(., na.rm = TRUE), .names = "Downside_{.col}")
     )
-  
+
   upside <- summary_data |>
     dplyr::select(Source, dplyr::starts_with("Upside_")) |>
     tidyr::pivot_longer(-Source, names_to = "Risk", values_to = "Value") |>
     dplyr::mutate(Type = "Upside", Risk_clean = rename_risk(Risk))
-  
+
   downside <- summary_data |>
     dplyr::select(Source, dplyr::starts_with("Downside_")) |>
     tidyr::pivot_longer(-Source, names_to = "Risk", values_to = "Value") |>
     dplyr::mutate(Type = "Downside", Risk_clean = rename_risk(Risk))
-  
+
   stack_data <- dplyr::bind_rows(upside, downside) |>
     dplyr::left_join(dplyr::select(summary_data, Source, inflation_exp), by = "Source") |>
     dplyr::group_by(Source, Type) |>
@@ -95,7 +95,7 @@ static_inflation_risk_history <- function(files_with_labels, infl_col = c(16), u
                     inflation_exp - Total * (cum_share - Share))
     ) |>
     dplyr::ungroup()
-  
+
   unique_risks <- sort(unique(stack_data$Risk_clean))
   colors <- c("#1C355E","#0067AB","#CCE1EE","#A5835A","#74253E","#00594F","#D15F27","#C7932C","#A2A9AD")
   if (length(unique_risks) > 9) {
@@ -104,10 +104,10 @@ static_inflation_risk_history <- function(files_with_labels, infl_col = c(16), u
     colors <- c(colors, sample(extra_colors, length(unique_risks) - 9))
   }
   colors_named <- setNames(colors[1:length(unique_risks)], unique_risks)
-  
+
   inflation_points <- summary_data |>
     dplyr::mutate(x = as.numeric(factor(Source)))
-  
+
   totals_df <- stack_data |>
     dplyr::group_by(Source, Type) |>
     dplyr::summarise(
@@ -120,7 +120,7 @@ static_inflation_risk_history <- function(files_with_labels, infl_col = c(16), u
       y = ifelse(Type == "Upside", inflation_exp + Total + 0.3, inflation_exp - Total - 0.3),
       label = Type
     )
-  
+
   p <- ggplot2::ggplot() +
     ggplot2::geom_rect(
       data = stack_data,
@@ -136,7 +136,7 @@ static_inflation_risk_history <- function(files_with_labels, infl_col = c(16), u
     ggplot2::geom_line(
       data = summary_data,
       ggplot2::aes(x = as.numeric(factor(Source)), y = inflation_exp, group = 1),
-      color = "black", size = 1.2
+      color = "grey", size = 2
     ) +
     ggplot2::geom_point(
       data = inflation_points,
@@ -172,6 +172,6 @@ static_inflation_risk_history <- function(files_with_labels, infl_col = c(16), u
       text = ggplot2::element_text(size = 14, family = "Arial"),
       plot.title = ggplot2::element_text(face = "bold", hjust = 0.5)
     )
-  
+
   return(p)
 }

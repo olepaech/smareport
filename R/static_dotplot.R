@@ -58,9 +58,9 @@ static_dotplot <- function(data, rel_cols = c(10,12,14), xlab = "Month", ylab = 
     ggplot2::theme_minimal() +
     ggplot2::labs(x = xlab, y = ylab, title = title) +
     ggplot2::theme(
-      text = ggplot2::element_text(size = 12, family = "Arial"),
-      plot.title = ggplot2::element_text(hjust = 0.5, family = "Arial"),
-      axis.title = ggplot2::element_text(family = "Arial"),
-      axis.text = ggplot2::element_text(family = "Arial")
+      text = ggplot2::element_text(size = 12, family = ""),
+      plot.title = ggplot2::element_text(hjust = 0.5, family = ""),
+      axis.title = ggplot2::element_text(family = ""),
+      axis.text = ggplot2::element_text(family = "")
     )
 }

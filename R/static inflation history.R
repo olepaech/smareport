@@ -169,7 +169,7 @@ static_inflation_risk_history <- function(files_with_labels, infl_col = c(16), u
     ) +
     ggplot2::theme_minimal() +
     ggplot2::theme(
-      text = ggplot2::element_text(size = 14, family = "Arial"),
+      text = ggplot2::element_text(size = 14, family = ""),
       plot.title = ggplot2::element_text(face = "bold", hjust = 0.5)
     )
 

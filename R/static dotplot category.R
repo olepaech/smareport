@@ -1,4 +1,4 @@
-#' Create a dotplot of rates by month and category 
+#' Create a dotplot of rates by month and category
 #'
 #' This function takes NBS survey data and creates a dotplot
 #' showing individual rate observations by month, colored by a
@@ -13,31 +13,31 @@
 #' @param title A character string specifying the title of the graph (optional).
 #'
 #' @return A static ggplot2 plot object.
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' path <- nbssma::load_participant_files()
 #' data <- readxl::read_excel("path")
-#' static_dotplot(data, category = "Experience")
+#' static_dotplot_category(data, category = "Experience")
 #' }
-#' 
+#'
 #' @author Ole Paech
-#' 
+#'
 #' @export
-static_dotplot <- function(data, category, rel_cols = c(10,12,14), xlab = "", ylab = "Rate (in %)", title = "") {
+static_dotplot_category <- function(data, category, rel_cols = c(10,12,14), xlab = "", ylab = "Rate (in %)", title = "") {
   category_map <- list(
     "Profession" = "What is your profession?",
     "Experience" = "How many years of expertise do you have?",
     "Nationality" = "What is your nationality?"
   )
-  
+
   if (!(category %in% names(category_map))) {
     stop("Invalid Category. Please choose between 'Profession', 'Experience' or 'Nationality'.")
   }
-  
+
   category_col <- category_map[[category]]
   relevant_cols <- names(data)[rel_cols]
-  
+
   data_clean <- data |>
     dplyr::select(dplyr::all_of(category_col), dplyr::all_of(relevant_cols)) |>
     dplyr::mutate(dplyr::across(
@@ -47,7 +47,7 @@ static_dotplot <- function(data, category, rel_cols = c(10,12,14), xlab = "", yl
         stringr::str_replace_all(",", ".") |>
         as.numeric()
     ))
-  
+
   data_long <- data_clean |>
     tidyr::pivot_longer(
       cols = dplyr::all_of(relevant_cols),
@@ -57,17 +57,17 @@ static_dotplot <- function(data, category, rel_cols = c(10,12,14), xlab = "", yl
     dplyr::filter(!is.na(Rate)) |>
     dplyr::filter(!is.na(.data[[category_col]]), .data[[category_col]] != "") |>
     dplyr::mutate(Month = extract_label(Question))
-  
+
   month_levels <- unique(data_long$Month)[
     order(match(unique(data_long$Month), extract_label(relevant_cols)))
   ]
-  
+
   data_long <- data_long |>
     dplyr::mutate(Month = factor(Month, levels = month_levels))
-  
+
   my_colors <- c("#1c355e", "#0067ab", "#cce1ee", "#a5835a", "#74253e",
                  "#00594f", "#d15f27", "#c7932c", "#a2a9ad")
-  
+
   ggplot2::ggplot(data_long, ggplot2::aes(
     x = Month,
     y = Rate,

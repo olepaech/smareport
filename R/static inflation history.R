@@ -25,7 +25,8 @@
 #'
 #' @export
 static_inflation_risk_history <- function(files_with_labels, infl_col = c(16), upside_col = c(17:22), downside_col = c(24:29), xlab = "Survey Date", ylab = "Average Inflation Expectations (in %)", title = "Development of Inflation Projections and perceived Risks") {
-  importance_map <- c(
+  suppressWarnings({
+    importance_map <- c(
     "Absolutely no relevance" = 0,
     "Not so Important" = 0.5,
     "Moderate" = 1.0,
@@ -174,4 +175,5 @@ static_inflation_risk_history <- function(files_with_labels, infl_col = c(16), u
     )
 
   return(p)
+  })
 }

@@ -22,63 +22,72 @@
 #' \dontrun{
 #' path <- nbssma::load_participant_files()
 #' data <- readxl::read_excel(path)
-#' plot_expectations(data)
+#' plot_dfr_expectations(data)
 #' }
 #'
 #' @author Ole Paech
 #'
 #' @export
-plot_expectations <- function(data, rel_col) {
+plot_dfr_expectations <- function(data, rel_col = c(10)) {
   get_current_dfr <- function() {
     url <- "https://tradingeconomics.com/euro-area/indicators"
     page <- rvest::read_html(url)
-    node <- rvest::html_element(
-      page,
-      xpath = '//*[@id="money"]/div/div/table/tbody/tr[15]/td[2]'
-    )
+    node <- rvest::html_element(page, xpath = '//*[@id="money"]/div/div/table/tbody/tr[15]/td[2]')
     text <- rvest::html_text(node)
-    value <- base::as.numeric(base::trimws(text))
+    value <- text |> base::trimws() |> base::as.numeric()
     return(value)
   }
-  
+
   current_dfr <- get_current_dfr()
+  relevant_cols <- base::names(data)[rel_col]
   month_labels <- extract_label(relevant_cols)
-  relevant_cols <- names(data)[rel_col]
-  
+
   data_numeric <- data |>
-    select(all_of(relevant_cols)) |>
-    mutate(across(everything(), ~ .x |>
-                    str_replace_all("%", "") |>
-                    str_replace_all(",", ".") |>
-                    as.numeric())) |>
-    tidyr::pivot_longer(cols = everything(), names_to = "Variable", values_to = "Expectation") |>
-    select(Expectation)
+    dplyr::select(dplyr::all_of(relevant_cols)) |>
+    dplyr::mutate(dplyr::across(
+      dplyr::everything(),
+      ~ .x |>
+        stringr::str_replace_all("%", "") |>
+        stringr::str_replace_all(",", ".") |>
+        base::as.numeric()
+    )) |>
+    tidyr::pivot_longer(
+      cols = dplyr::everything(),
+      names_to = "Variable",
+      values_to = "Expectation"
+    ) |>
+    dplyr::select(Expectation)
+
   df_compare <- data_numeric |>
-    mutate(
-      Category = case_when(
+    dplyr::mutate(
+      Category = dplyr::case_when(
         Expectation > current_dfr ~ "Rate Increase",
         Expectation < current_dfr ~ "Rate Decrease",
         TRUE ~ "No Change"
       ),
-      Category = factor(Category, levels = c("Rate Decrease", "No Change", "Rate Increase"))
+      Category = base::factor(Category, levels = c("Rate Decrease", "No Change", "Rate Increase"))
     )
-  p <- ggplot(df_compare, aes(x = Category, fill = Category)) +
-    geom_bar() +
-    scale_fill_manual(values = c(
+
+  p <- ggplot2::ggplot(df_compare, ggplot2::aes(x = Category, fill = Category)) +
+    ggplot2::geom_bar() +
+    ggplot2::scale_fill_manual(values = c(
       "Rate Increase" = "#1c355e",
       "Rate Decrease" = "#cce1ee",
       "No Change" = "#0067ab"
     )) +
-    scale_y_continuous(
-      breaks = function(x) floor(min(x)):ceiling(max(x)),
-      expand = expansion(mult = c(0, 0.05))
+    ggplot2::scale_y_continuous(
+      breaks = function(x) base::floor(base::min(x)):base::ceiling(base::max(x)),
     ) +
-    labs(
-      title = paste0("Expectations for the ECB Deposit Facility Rate for ",month_labels, " (Current: ", current_dfr, "%)"),
+    ggplot2::labs(
+      title = paste0(
+        "Expectations for the ECB Deposit Facility Rate for ",
+        month_labels,
+        " (Current: ", current_dfr, "%)"
+      ),
       x = "Expected Rate Direction",
       y = "Number of Respondents"
     ) +
-    theme_minimal(base_family = "Arial")
-  
+    ggplot2::theme_minimal(base_family = "")
+
   return(p)
 }

@@ -8,7 +8,8 @@ static_bar_line(
   data,
   rel_cols = c(10, 12, 14),
   title1 = "Median in \% (left)",
-  title2 = "IQR (right)"
+  title2 = "IQR (right)",
+  title = ""
 )
 }
 \arguments{

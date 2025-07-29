@@ -47,7 +47,6 @@ static_risk_factors <- function(
   names(data_renamed)[upside_col] <- risks_1
   names(data_renamed)[downside_col] <- risks_2
 
-
   mapping <- c(
     "Absolutely no relevance" = 0,
     "Not so Important" = 0.25,
@@ -97,6 +96,9 @@ static_risk_factors <- function(
     unique_vars
   )
 
+  # Add Inflation Expectation to legend
+  farben_extended <- c(farben, "Inflation Expectation" = "grey30")
+
   df_plot$Variable <- factor(df_plot$Variable, levels = unique_vars)
 
   df_plot <- df_plot |>
@@ -126,7 +128,10 @@ static_risk_factors <- function(
 
   ggplot2::ggplot(df_plot, ggplot2::aes(x = x, ymin = ymin, ymax = ymax, fill = Variable)) +
     ggplot2::geom_rect(ggplot2::aes(xmin = 0.7, xmax = 2.3), color = "black") +
-    ggplot2::geom_hline(yintercept = inf_val, linetype = "dashed", linewidth = 1.1) +
+    ggplot2::geom_hline(
+      ggplot2::aes(yintercept = inf_val, color = "Inflation Expectation"),
+      linetype = "dashed", linewidth = 1.1, show.legend = TRUE
+    ) +
     ggplot2::geom_point(
       ggplot2::aes(x = 1.5, y = inf_val),
       color = "white", size = 2, show.legend = FALSE
@@ -145,7 +150,15 @@ static_risk_factors <- function(
       label = "Downside Risk",
       size = 4, hjust = 0.5
     ) +
-    ggplot2::scale_fill_manual(values = farben) +
+    ggplot2::scale_fill_manual(
+      values = farben_extended,
+      breaks = c(names(farben), "Inflation Expectation")
+    ) +
+    ggplot2::scale_color_manual(
+      name = NULL,
+      values = c("Inflation Expectation" = "grey30"),
+      guide = "legend"
+    ) +
     ggplot2::scale_y_continuous(
       name = ylab,
       breaks = seq(0, max_y, by = 1),
@@ -154,6 +167,10 @@ static_risk_factors <- function(
         name = ylab2,
         breaks = seq(-ceiling(total_downside), ceiling(total_upside), by = 1)
       )
+    ) +
+    ggplot2::guides(
+      fill = ggplot2::guide_legend(order = 1),
+      color = ggplot2::guide_legend(order = 2, override.aes = list(linetype = "dashed", shape = NA))
     ) +
     ggplot2::theme_minimal(base_size = 11) +
     ggplot2::labs(x = xlab, title = title) +

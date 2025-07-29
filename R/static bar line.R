@@ -22,7 +22,7 @@
 #' @importFrom stats median quantile
 #'
 #' @export
-static_bar_line <- function(data, rel_cols = c(10,12,14), title1 = "Median in % (left)", title2 = "IQR (right)") {
+static_bar_line <- function(data, rel_cols = c(10,12,14), title1 = "Median in % (left)", title2 = "IQR (right)", title = "") {
   suppressWarnings({
     relevant_cols <- names(data)[rel_cols]
 
@@ -90,7 +90,7 @@ static_bar_line <- function(data, rel_cols = c(10,12,14), title1 = "Median in % 
       ) +
       ggplot2::labs(
         x = "",
-        title = ""
+        title = title
       ) +
       ggplot2::theme_minimal(base_size = 11) +
       ggplot2::theme(

@@ -80,6 +80,7 @@ static_aggregated_risk_factors <- function(
     )
 
     farben <- c("Upside Risks" = "#1c355e", "Downside Risks" = "#0067ab")
+    punktfarbe <- c("Inflation Expectation" = "#cce1ee")
     max_abs_risk <- max(abs(df_plot$Value))
 
     sec_breaks <- pretty(c(-max_abs_risk, max_abs_risk))
@@ -102,11 +103,21 @@ static_aggregated_risk_factors <- function(
                                       ymax = inflation_value,
                                       fill = Group),
                          color = "black") +
-      ggplot2::geom_point(ggplot2::aes(x = 1, y = inflation_value),
-                          color = "#cce1ee", size = 2) +
-      ggplot2::geom_hline(yintercept = inflation_value,
-                          linetype = "dashed", size = 1, color = "#cce1ee") +
+
+      # Punkt mit Legenden-Mapping
+      ggplot2::geom_point(
+        ggplot2::aes(x = 1, y = inflation_value, color = "Inflation Expectation"),
+        size = 2
+      ) +
+      # Linie mit gleicher Farbe für Legende
+      ggplot2::geom_hline(
+        ggplot2::aes(yintercept = inflation_value, color = "Inflation Expectation"),
+        linetype = "dashed", size = 1
+      ) +
+
       ggplot2::scale_fill_manual(values = farben) +
+      ggplot2::scale_color_manual(values = punktfarbe) +
+
       ggplot2::scale_x_continuous(breaks = 1, labels = "Risks") +
       ggplot2::scale_y_continuous(
         name = ylab,
@@ -117,7 +128,11 @@ static_aggregated_risk_factors <- function(
           labels = scales::number_format(accuracy = 0.1)(sec_breaks_scaled)
         )
       ) +
-      ggplot2::labs(x = xlab, title = title, fill = "") +
+      ggplot2::labs(x = xlab, title = title) +
+      ggplot2::guides(
+        fill = ggplot2::guide_legend(order = 1),
+        color = ggplot2::guide_legend(order = 2, override.aes = list(shape = 16, linetype = "dashed"))
+      ) +
       ggplot2::theme_minimal(base_size = 11) +
       ggplot2::theme(
         axis.text.x = ggplot2::element_text(size = 11),

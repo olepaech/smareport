@@ -11,7 +11,7 @@ static_inflation_risk_history(
   downside_col = c(24:29),
   xlab = "Survey Date",
   ylab = "Average Inflation Expectations (in \%)",
-  title = "Development of Inflation Projections and perceived Risks"
+  title = "Development of Inflation Projections and Perceived Risks"
 )
 }
 \arguments{

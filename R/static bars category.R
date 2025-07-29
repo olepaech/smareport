@@ -25,9 +25,9 @@ static_group_bar_category <- function(
 ) {
 
   category_map <- list(
-    "Profession" = "What is your profession?",
-    "Experience" = "How many years of expertise do you have?",
-    "Nationality" = "What is your nationality?"
+    "Profession" = "What is your profession? (optional)",
+    "Experience" = "How many years of expertise do you have? (optional)",
+    "Nationality" = "What is your nationality? (optional)"
   )
 
   if (!(category %in% names(category_map))) {

@@ -27,9 +27,9 @@
 #' @export
 static_boxplot_categories <- function(data, category, rel_cols = c(10,12,14), xlab = "", ylab = "Rate (in %)", title = "") {
   category_map <- list(
-    "Profession" = "What is your profession?",
-    "Experience" = "How many years of expertise do you have?",
-    "Nationality" = "What is your nationality?"
+    "Profession" = "What is your profession? (optional)",
+    "Experience" = "How many years of expertise do you have? (optional)",
+    "Nationality" = "What is your nationality? (optional)"
   )
 
   if (!(category %in% names(category_map))) {

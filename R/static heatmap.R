@@ -29,9 +29,9 @@ static_heatmap_categories <- function(
 ) {
 
   category_map <- list(
-    "Profession" = "What is your profession?",
-    "Experience" = "How many years of expertise do you have?",
-    "Nationality" = "What is your nationality?"
+    "Profession" = "What is your profession? (optional)",
+    "Experience" = "How many years of expertise do you have? (optional)",
+    "Nationality" = "What is your nationality? (optional)"
   )
 
   if (!(category1 %in% names(category_map) && category2 %in% names(category_map))) {

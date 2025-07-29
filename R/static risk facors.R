@@ -136,14 +136,14 @@ static_risk_factors <- function(
       x = 1.5,
       y = max(df_plot$ymax[df_plot$Group == "S–W"]) + 0.5,
       label = "Upside Risk",
-      size = 4, fontface = "bold", hjust = 0.5
+      size = 4, hjust = 0.5
     ) +
     ggplot2::annotate(
       "text",
       x = 1.5,
       y = min(df_plot$ymin[df_plot$Group == "X–AB"]) - 1.2,
       label = "Downside Risk",
-      size = 4, fontface = "bold", hjust = 0.5
+      size = 4, hjust = 0.5
     ) +
     ggplot2::scale_fill_manual(values = farben) +
     ggplot2::scale_y_continuous(
@@ -155,15 +155,16 @@ static_risk_factors <- function(
         breaks = seq(-ceiling(total_downside), ceiling(total_upside), by = 1)
       )
     ) +
-    ggplot2::theme_minimal() +
+    ggplot2::theme_minimal(base_size = 11) +
     ggplot2::labs(x = xlab, title = title) +
     ggplot2::theme(
       plot.margin = ggplot2::margin(t = 2, r = 2, b = 2, l = 2),
       axis.text.x = ggplot2::element_blank(),
       axis.ticks.x = ggplot2::element_blank(),
-      axis.text.y = ggplot2::element_text(size = 10),
+      axis.text.y = ggplot2::element_text(),
       panel.grid.major.x = ggplot2::element_blank(),
       legend.position = "right",
-      legend.title = ggplot2::element_blank()
+      legend.title = ggplot2::element_blank(),
+      plot.title = ggplot2::element_text(hjust = 0.5)
     )
 }

@@ -23,7 +23,7 @@
 static_boxplot <- function(data, rel_cols = c(10, 12, 14),
                            xlab = "", ylab = "Median Rate (in %)", title = "") {
   relevant_cols <- names(data)[rel_cols]
-  
+
   data_clean <- data |>
     dplyr::select(dplyr::all_of(relevant_cols)) |>
     dplyr::mutate(dplyr::across(
@@ -33,7 +33,7 @@ static_boxplot <- function(data, rel_cols = c(10, 12, 14),
         stringr::str_replace_all(",", ".") |>
         as.numeric()
     ))
-  
+
   data_long <- data_clean |>
     tidyr::pivot_longer(
       cols = dplyr::everything(),
@@ -42,10 +42,10 @@ static_boxplot <- function(data, rel_cols = c(10, 12, 14),
     ) |>
     dplyr::filter(!is.na(Rate)) |>
     dplyr::mutate(Month = nbssma::extract_label(Question))
-  
+
   month_levels <- nbssma::extract_label(relevant_cols)
   data_long$Month <- factor(data_long$Month, levels = month_levels)
-  
+
   ggplot2::ggplot(data_long, ggplot2::aes(x = Month, y = Rate)) +
     ggplot2::geom_boxplot(fill = "#cce1ee", color = "#1c355e") +
     ggplot2::labs(
@@ -53,5 +53,11 @@ static_boxplot <- function(data, rel_cols = c(10, 12, 14),
       y = ylab,
       title = title
     ) +
-    ggplot2::theme_minimal()
+    ggplot2::theme_minimal(base_size = 11) +
+    ggplot2::theme(
+      text = ggplot2::element_text(),
+      axis.title = ggplot2::element_text(),
+      axis.text = ggplot2::element_text(),
+      plot.title = ggplot2::element_text(hjust = 0.5)
+    )
 }

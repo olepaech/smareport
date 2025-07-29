@@ -103,7 +103,7 @@ static_heatmap_categories <- function(
     ggplot2::geom_tile(color = "white") +
     ggplot2::facet_wrap(~Month, ncol = 2) +
     ggplot2::scale_fill_gradient(low = "white", high = "#1c355e") +
-    ggplot2::theme_minimal(base_size = 12) +
+    ggplot2::theme_minimal(base_size = 11) +
     ggplot2::labs(
       x = category1,
       y = category2,
@@ -111,11 +111,11 @@ static_heatmap_categories <- function(
       fill = "Median"
     ) +
     ggplot2::theme(
-      text = ggplot2::element_text(family = "Arial"),
-      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, family = "Arial"),
-      axis.text.y = ggplot2::element_text(family = "Arial"),
-      axis.title = ggplot2::element_text(family = "Arial"),
-      plot.title = ggplot2::element_text(family = "Arial"),
+      text = ggplot2::element_text(),
+      axis.text.x = ggplot2::element_text(angle = 45),
+      axis.text.y = ggplot2::element_text(),
+      axis.title = ggplot2::element_text(),
+      plot.title = ggplot2::element_text(hjust = 0.5),
       panel.spacing = grid::unit(2, "lines")
     )
 }

@@ -118,12 +118,13 @@ static_aggregated_risk_factors <- function(
         )
       ) +
       ggplot2::labs(x = xlab, title = title, fill = "") +
-      ggplot2::theme_minimal() +
+      ggplot2::theme_minimal(base_size = 11) +
       ggplot2::theme(
-        axis.text.x = ggplot2::element_text(size = 12, face = "bold"),
+        axis.text.x = ggplot2::element_text(size = 11),
         axis.ticks.x = ggplot2::element_blank(),
         legend.position = "right",
-        legend.title = ggplot2::element_blank()
+        legend.title = ggplot2::element_blank(),
+        plot.title = ggplot2::element_text(hjust = 0.5)
       )
 
     return(p)

@@ -60,21 +60,43 @@ static_bar_line <- function(data, rel_cols = c(10,12,14), title1 = "Median in % 
     ratio <- max_median / max_iqr
 
     ggplot2::ggplot(stats, ggplot2::aes(x = Month_numeric)) +
-      ggplot2::geom_col(ggplot2::aes(y = Median), fill = "#1c355e", width = 0.6) +
-      ggplot2::geom_line(ggplot2::aes(y = IQR * ratio), color = "#cce1ee", size = 1.5) +
-      ggplot2::geom_point(ggplot2::aes(y = IQR * ratio), color = "#cce1ee", size = 3) +
-      ggplot2::scale_x_continuous(breaks = stats$Month_numeric, labels = stats$Month) +
+      ggplot2::geom_col(
+        ggplot2::aes(y = Median, fill = "Median"),
+        width = 0.6, show.legend = TRUE
+      ) +
+      ggplot2::geom_line(
+        ggplot2::aes(y = IQR * ratio, color = "IQR"),
+        size = 1.5, show.legend = TRUE
+      ) +
+      ggplot2::geom_point(
+        ggplot2::aes(y = IQR * ratio, color = "IQR"),
+        size = 3, show.legend = FALSE
+      ) +
+      ggplot2::scale_x_continuous(
+        breaks = stats$Month_numeric,
+        labels = stats$Month
+      ) +
       ggplot2::scale_y_continuous(
         name = title1,
         sec.axis = ggplot2::sec_axis(~./ratio, name = title2)
       ) +
-      ggplot2::labs(x = "", title = "") +
-      ggplot2::theme_minimal(base_size = 14) +
+      ggplot2::scale_fill_manual(
+        name = NULL,
+        values = c("Median" = "#1c355e")
+      ) +
+      ggplot2::scale_color_manual(
+        name = NULL,
+        values = c("IQR" = "#cce1ee")
+      ) +
+      ggplot2::labs(
+        x = "",
+        title = ""
+      ) +
+      ggplot2::theme_minimal(base_size = 11) +
       ggplot2::theme(
         axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-        text = ggplot2::element_text(family = "Arial"),
-        axis.title = ggplot2::element_text(family = "Arial"),
-        axis.text = ggplot2::element_text(family = "Arial")
+        plot.title = ggplot2::element_text(hjust = 0.5),
+        legend.position = "right"
       )
   })
 }

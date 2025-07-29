@@ -73,17 +73,17 @@ static_dotplot_category <- function(data, category, rel_cols = c(10,12,14), xlab
     y = Rate,
     color = .data[[category_col]]
   )) +
-    ggplot2::geom_jitter(width = 0.2, height = 0.02, size = 5, alpha = 0.8) +
+    ggplot2::geom_point(size = 3, alpha = 1, position = ggplot2::position_dodge(width = 0.7, preserve = "total")) +
     ggplot2::scale_color_manual(values = my_colors) +
-    ggplot2::theme_minimal() +
+    ggplot2::theme_minimal(base_size = 11) +
     ggplot2::labs(
       x = xlab, y = ylab, title = title,
       color = category
     ) +
     ggplot2::theme(
-      text = ggplot2::element_text(size = 12, family = "Arial"),
-      plot.title = ggplot2::element_text(hjust = 0.5, family = "Arial"),
-      axis.title = ggplot2::element_text(family = "Arial"),
-      axis.text = ggplot2::element_text(family = "Arial")
+      text = ggplot2::element_text(size = 11),
+      plot.title = ggplot2::element_text(hjust = 0.5),
+      axis.title = ggplot2::element_text(),
+      axis.text = ggplot2::element_text()
     )
 }

@@ -55,22 +55,40 @@ static_shaded_plot <- function(data, rel_cols = c(10, 12, 14), xlab = "", ylab =
       dplyr::mutate(Month_numeric = dplyr::row_number())
 
     ggplot2::ggplot(summary_stats, ggplot2::aes(x = Month_numeric)) +
-      ggplot2::geom_ribbon(ggplot2::aes(ymin = P25, ymax = P75), fill = "lightblue", alpha = 0.4) +
-      ggplot2::geom_line(ggplot2::aes(y = Median), color = "#1C355E", size = 1.2) +
-      ggplot2::geom_point(ggplot2::aes(y = Median), color = "#1C355E", size = 2.5) +
+      ggplot2::geom_ribbon(
+        ggplot2::aes(ymin = P25, ymax = P75, fill = "Interquartile Range"),
+        alpha = 0.4
+      ) +
+      ggplot2::geom_line(
+        ggplot2::aes(y = Median, color = "Median"),
+        size = 1.2
+      ) +
+      ggplot2::geom_point(
+        ggplot2::aes(y = Median, color = "Median"),
+        size = 2.5
+      ) +
       ggplot2::scale_x_continuous(
         breaks = summary_stats$Month_numeric,
         labels = summary_stats$Month
+      ) +
+      ggplot2::scale_fill_manual(
+        name = NULL,
+        values = c("Interquartile Range" = "lightblue")
+      ) +
+      ggplot2::scale_color_manual(
+        name = NULL,
+        values = c("Median" = "#1C355E")
       ) +
       ggplot2::labs(
         x = xlab,
         y = ylab,
         title = title
       ) +
-      ggplot2::theme_minimal(base_size = 14) +
+      ggplot2::theme_minimal(base_size = 11) +
       ggplot2::theme(
         axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-        text = ggplot2::element_text(family = "Arial")
+        legend.position = "right",
+        plot.title = ggplot2::element_text(hjust = 0.5)
       )
   })
 }

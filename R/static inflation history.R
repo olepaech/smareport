@@ -24,7 +24,7 @@
 #' }
 #'
 #' @export
-static_inflation_risk_history <- function(files_with_labels, infl_col = c(16), upside_col = c(17:22), downside_col = c(24:29), xlab = "Survey Date", ylab = "Average Inflation Expectations (in %)", title = "Development of Inflation Projections and perceived Risks") {
+static_inflation_risk_history <- function(files_with_labels, infl_col = c(16), upside_col = c(17:22), downside_col = c(24:29), xlab = "Survey Date", ylab = "Average Inflation Expectations (in %)", title = "Development of Inflation Projections and Perceived Risks") {
   suppressWarnings({
     importance_map <- c(
     "Absolutely no relevance" = 0,
@@ -147,12 +147,12 @@ static_inflation_risk_history <- function(files_with_labels, infl_col = c(16), u
     ggplot2::geom_text(
       data = dplyr::filter(totals_df, Type == "Upside"),
       ggplot2::aes(x = x, y = y, label = label),
-      size = 4, vjust = 0, fontface = "bold"
+      size = 4, vjust = 0
     ) +
     ggplot2::geom_text(
       data = dplyr::filter(totals_df, Type == "Downside"),
       ggplot2::aes(x = x, y = y, label = label),
-      size = 4, vjust = 1.2, fontface = "bold"
+      size = 4, vjust = 1.2
     ) +
     ggplot2::scale_x_continuous(
       breaks = 1:length(files_with_labels),
@@ -168,10 +168,10 @@ static_inflation_risk_history <- function(files_with_labels, infl_col = c(16), u
       fill = "Risk Factor",
       title = title
     ) +
-    ggplot2::theme_minimal() +
+    ggplot2::theme_minimal(base_size = 11) +
     ggplot2::theme(
-      text = ggplot2::element_text(size = 14, family = ""),
-      plot.title = ggplot2::element_text(face = "bold", hjust = 0.5)
+      text = ggplot2::element_text(),
+      plot.title = ggplot2::element_text(hjust = 0.5)
     )
 
   return(p)

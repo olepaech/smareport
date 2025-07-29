@@ -96,10 +96,11 @@ static_risk_bubble <- function(data,
       y = ylab,
       color = "Category"
     ) +
-    ggplot2::theme_minimal() +
+    ggplot2::theme_minimal(base_size = 11) +
     ggplot2::theme(
-      axis.text.x = ggplot2::element_text(size = 12),
-      legend.position = "right"
+      axis.text.x = ggplot2::element_text(),
+      legend.position = "right",
+      plot.title = ggplot2::element_text(hjust = 0.5)
     )
 
   return(plot)

@@ -9,20 +9,20 @@
 #' @param title A character string specifying the title of the graph (optional).
 #'
 #' @return A static ggplot2 histogram plot.
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' path <- nbssma::load_participant_files()
 #' data <- readxl::read_excel("path")
 #' static_grouped_histogram(data)
 #' }
-#' 
+#'
 #' @author Ole Paech
 #'
 #' @export
 static_grouped_histogram <- function(data, rel_cols = c(10,12,14), xlab = "Expected Rate", ylab = "Percentage (%)", title = "") {
   relevant_cols <- names(data)[rel_cols]
-  
+
   data_clean <- data |>
     dplyr::select(dplyr::all_of(relevant_cols)) |>
     dplyr::mutate(dplyr::across(
@@ -32,7 +32,7 @@ static_grouped_histogram <- function(data, rel_cols = c(10,12,14), xlab = "Expec
         stringr::str_replace_all(",", ".") |>
         as.numeric()
     ))
-  
+
   data_long <- data_clean |>
     tidyr::pivot_longer(
       cols = dplyr::everything(),
@@ -41,37 +41,37 @@ static_grouped_histogram <- function(data, rel_cols = c(10,12,14), xlab = "Expec
     ) |>
     dplyr::filter(!is.na(Rate)) |>
     dplyr::mutate(Month = extract_label(Question))
-  
+
   months_unique <- unique(data_long$Month)
   months_unique <- months_unique[months_unique != "Other"]
-  
+
   long_run_present <- "Long-Run" %in% months_unique
   months_no_longrun <- months_unique[months_unique != "Long-Run"]
-  
+
   parse_month <- function(m) {
     lubridate::dmy(paste("01", m))
   }
-  
+
   dates <- vapply(months_no_longrun, parse_month, lubridate::today())
   months_sorted <- months_no_longrun[order(dates)]
   if (long_run_present) {
     months_sorted <- c(months_sorted, "Long-Run")
   }
-  
+
   data_long$Month <- factor(data_long$Month, levels = months_sorted)
-  
+
   breaks <- seq(min(data_clean, na.rm = TRUE),
                 max(data_clean, na.rm = TRUE),
                 by = 0.25)
   labels <- paste(head(breaks, -1), "to", tail(breaks, -1))
-  
+
   data_long$Bin <- cut(data_long$Rate, breaks = breaks, labels = labels,
                        include.lowest = TRUE, right = FALSE)
-  
+
   Colors <- c("#1c355e", "#0067ab", "#cce1ee", "#a5835a", "#74253e",
               "#00594f", "#d15f27", "#c7932c", "#a2a9ad")
   Colors <- Colors[seq_along(months_sorted)]
-  
+
   hist_data <- data_long |>
     dplyr::group_by(Month, Bin) |>
     dplyr::summarise(Freq = dplyr::n(), .groups = "drop") |>
@@ -79,21 +79,21 @@ static_grouped_histogram <- function(data, rel_cols = c(10,12,14), xlab = "Expec
     dplyr::group_by(Month) |>
     dplyr::mutate(Percent = Freq / sum(Freq) * 100) |>
     dplyr::ungroup()
-  
+
   median_vals <- vapply(relevant_cols, function(col) {
     stats::median(data_clean[[col]], na.rm = TRUE)
   }, numeric(1))
-  
+
   median_bins <- cut(median_vals, breaks = breaks, labels = labels,
                      include.lowest = TRUE, right = FALSE)
-  
+
   bin_midpoints <- (head(breaks, -1) + tail(breaks, -1)) / 2
-  
+
   median_x <- vapply(median_bins, function(bin) {
     bin_idx <- which(labels == bin)
     bin_midpoints[bin_idx]
   }, numeric(1))
-  
+
   median_y <- vapply(seq_along(median_bins), function(i) {
     bin <- median_bins[i]
     month <- months_sorted[i]
@@ -102,7 +102,7 @@ static_grouped_histogram <- function(data, rel_cols = c(10,12,14), xlab = "Expec
       dplyr::pull(Percent)
     if (length(val) == 0) 0 else val
   }, numeric(1))
-  
+
   median_df <- tibble::tibble(
     Month = factor(months_sorted, levels = months_sorted),
     Median = median_vals,
@@ -110,7 +110,7 @@ static_grouped_histogram <- function(data, rel_cols = c(10,12,14), xlab = "Expec
     x = median_x,
     y = median_y
   )
-  
+
   p <- ggplot2::ggplot() +
     ggplot2::geom_bar(data = hist_data,
                       mapping = ggplot2::aes(x = Bin, y = Percent, fill = Month),
@@ -126,13 +126,13 @@ static_grouped_histogram <- function(data, rel_cols = c(10,12,14), xlab = "Expec
                        show.legend = FALSE) +
     ggplot2::scale_fill_manual(values = Colors, labels = months_sorted) +
     ggplot2::labs(x = xlab, y = ylab, title = title, fill = "Month") +
-    ggplot2::theme_minimal(base_size = 14) +
+    ggplot2::theme_minimal(base_size = 11) +
     ggplot2::theme(
-      text = ggplot2::element_text(family = "Arial"),
-      axis.title = ggplot2::element_text(family = "Arial"),
-      axis.text = ggplot2::element_text(family = "Arial"),
-      plot.title = ggplot2::element_text(family = "Arial", face = "bold", hjust = 0.5)
+      text = ggplot2::element_text(),
+      axis.title = ggplot2::element_text(),
+      axis.text = ggplot2::element_text(),
+      plot.title = ggplot2::element_text(hjust = 0.5)
     )
-  
+
   return(p)
 }

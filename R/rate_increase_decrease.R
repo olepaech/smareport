@@ -87,7 +87,10 @@ plot_dfr_expectations <- function(data, rel_col = c(10)) {
       x = "Expected Rate Direction",
       y = "Number of Respondents"
     ) +
-    ggplot2::theme_minimal(base_family = "")
+    ggplot2::theme_minimal(base_size = 11) +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(hjust = 0.5)
+    )
 
   return(p)
 }

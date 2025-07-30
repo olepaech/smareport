@@ -73,7 +73,7 @@ static_dotplot_category <- function(data, category, rel_cols = c(10,12,14), xlab
     y = Rate,
     color = .data[[category_col]]
   )) +
-    ggplot2::geom_point(size = 3, alpha = 1, position = ggplot2::position_dodge(width = 0.7, preserve = "total")) +
+    ggplot2::geom_point(size = 3, alpha = 1, position = ggplot2::position_dodge2(width = 0.7, preserve = "total", padding = 0)) +
     ggplot2::scale_color_manual(values = my_colors) +
     ggplot2::theme_minimal(base_size = 11) +
     ggplot2::labs(

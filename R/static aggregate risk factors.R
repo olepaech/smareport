@@ -28,6 +28,7 @@ static_aggregated_risk_factors <- function(
     downside_col = 24:29,
     xlab = "",
     ylab = "Average Inflation Expectation",
+    ylab2 = "Risk Weight",
     title = ""
 ) {
   suppressWarnings({
@@ -123,7 +124,7 @@ static_aggregated_risk_factors <- function(
         name = ylab,
         sec.axis = ggplot2::sec_axis(
           trans = ~ (. - inflation_value) / max_abs_risk,
-          name = "Risk Weight",
+          name = ylab2,
           breaks = sec_breaks_scaled,
           labels = scales::number_format(accuracy = 0.1)(sec_breaks_scaled)
         )

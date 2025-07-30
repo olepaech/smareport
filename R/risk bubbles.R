@@ -23,7 +23,7 @@ static_risk_bubble <- function(data,
                                upside = 17:22,
                                downside = 24:29,
                                xlab = "Risk Type",
-                               ylab = "Avg. Importance (0 = low, 4 = high)",
+                               ylab = "Avg. Importance (0 = low, 2 = high)",
                                title = "Upside and Downside Risk Composition") {
 
   risks_up <- stringr::str_remove(names(data)[upside], "\\s*2$")

@@ -28,10 +28,10 @@ static_inflation_risk_history <- function(files_with_labels, infl_col = c(16), u
   suppressWarnings({
     importance_map <- c(
       "Absolutely no relevance" = 0,
-      "Not so Important" = 0.5,
-      "Moderate" = 1.0,
-      "Important" = 1.5,
-      "Very Important" = 2.0
+      "Not so Important" = 0.25,
+      "Moderate" = 0.5,
+      "Important" = 0.75,
+      "Very Important" = 1.0
     )
 
     rename_risk <- function(x) {

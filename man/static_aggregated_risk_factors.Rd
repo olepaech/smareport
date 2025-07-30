@@ -11,6 +11,7 @@ static_aggregated_risk_factors(
   downside_col = 24:29,
   xlab = "",
   ylab = "Average Inflation Expectation",
+  ylab2 = "Risk Weight",
   title = ""
 )
 }
